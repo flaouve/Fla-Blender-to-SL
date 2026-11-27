@@ -11,7 +11,7 @@ except ImportError:  # pragma: no cover - allows importing scene_extract outside
 bl_info = {
     "name": "Fla-Blender-to-SL Exporter",
     "author": "Flaouve",
-    "version": (0, 1, 0),
+    "version": (0, 2, 0),
     "blender": (4, 2, 0),
     "location": "View3D > Sidebar > SCP:SL",
     "description": "Export Blender scenes to SCP:SL (Fla-SL-CustomObjects / FlaProjectMER) schematics",

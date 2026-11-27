@@ -39,3 +39,17 @@ def test_cli_export_and_validate_end_to_end(tmp_path: Path):
     assert main(["validate", str(json_path)]) == 0
     data = json.loads(json_path.read_text())
     assert data["RootObjectId"] == 1000
+
+
+def test_cli_ai_handoff_writes_ai_instructions_md(tmp_path: Path):
+    glb = tmp_path / "ring.glb"
+    trimesh.creation.torus(major_radius=1.0, minor_radius=0.25).export(glb)
+    out_dir = tmp_path / "handoff_out"
+
+    assert main(["export", str(glb), "-o", str(out_dir), "--complex-mode", "ai_handoff"]) == 0
+    instructions = out_dir / "AI_INSTRUCTIONS.md"
+    assert instructions.exists()
+    content = instructions.read_text(encoding="utf-8")
+    assert "ring.json" in content
+    assert "handoff_manifest.json" in content
+    assert "fla-blender-to-sl merge" in content

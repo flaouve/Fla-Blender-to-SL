@@ -62,6 +62,10 @@ def test_light_block_scales_intensity_and_range_by_100():
     assert props["LightType"] == 2
     assert props["Intensity"] == 150.0
     assert props["Range"] == 1000.0
+    assert props["Shape"] == 0
+    assert props["SpotAngle"] == 30.0
+    assert props["InnerSpotAngle"] == 21.8
+    assert props["ShadowStrength"] == 1.0
     assert props["ShadowType"] == 2
 
 

@@ -10,6 +10,7 @@ from bpy.props import BoolProperty, IntProperty, StringProperty
 from bpy_extras.io_utils import ExportHelper
 
 from fla_blender_to_sl.exporter import ComplexMode, ExportConfig, export_scene
+from fla_blender_to_sl.handoff_instructions import build_ai_instructions_md
 from fla_blender_to_sl.validator import validate_schematic
 
 from .scene_extract import extract_blender_objects
@@ -50,20 +51,22 @@ class FLASL_OT_export_schematic(bpy.types.Operator, ExportHelper):
 
     def execute(self, context: bpy.types.Context) -> set[str]:
         objs = _collect_export_objects(context, self.selected_only)
-        out_path = Path(self.filepath)
-        if out_path.exists() and not self.overwrite_existing:
-            self.report(
-                {"ERROR"},
-                f"File already exists: {out_path.name}. Enable 'Overwrite Existing' in the export sidebar to overwrite.",
-            )
-            return {"CANCELLED"}
-        graph = extract_blender_objects(objs, scene_name=out_path.stem or context.scene.name)
+        raw_path = Path(self.filepath)
+        graph = extract_blender_objects(objs, scene_name=raw_path.stem or context.scene.name)
 
         config = ExportConfig(
             complex_mode=ComplexMode.DECOMPOSE,
             max_primitives_per_complex=self.max_primitives_per_complex,
         )
         result = export_scene(graph, config=config)
+        out_path = raw_path.with_name(f"{result.schematic_name}.json")
+        if out_path.exists() and not self.overwrite_existing:
+            self.report(
+                {"ERROR"},
+                f"File already exists: {out_path.name}. Enable 'Overwrite Existing' in the export sidebar to overwrite.",
+            )
+            return {"CANCELLED"}
+
         payload = result.schematic.to_dict()
         report = validate_schematic(payload)
 
@@ -160,6 +163,12 @@ class FLASL_OT_export_hybrid_handoff(bpy.types.Operator):
                 },
                 indent=2,
             ),
+            encoding="utf-8",
+        )
+
+        instructions_path = out_dir / "AI_INSTRUCTIONS.md"
+        instructions_path.write_text(
+            build_ai_instructions_md(json_path.name, len(manifest_entries)),
             encoding="utf-8",
         )
 

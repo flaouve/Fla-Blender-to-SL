@@ -11,6 +11,7 @@ from typing import Sequence
 
 from fla_blender_to_sl.classifier import classify_mesh
 from fla_blender_to_sl.exporter import ComplexMode, ExportConfig, export_scene
+from fla_blender_to_sl.handoff_instructions import build_ai_instructions_md
 from fla_blender_to_sl.mesh_loader import load_mesh_file, render_multiview_sheet
 from fla_blender_to_sl.merger import merge_reconstructed_blocks
 from fla_blender_to_sl.validator import validate_schematic
@@ -101,6 +102,10 @@ def _cmd_export(args: argparse.Namespace) -> int:
                 },
                 indent=2,
             ),
+            encoding="utf-8",
+        )
+        (out_dir / "AI_INSTRUCTIONS.md").write_text(
+            build_ai_instructions_md(json_path.name, len(manifest_entries)),
             encoding="utf-8",
         )
 

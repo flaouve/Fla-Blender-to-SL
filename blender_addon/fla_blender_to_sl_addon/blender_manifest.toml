@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 
 id = "fla_blender_to_sl_addon"
-version = "0.1.0"
+version = "0.2.0"
 name = "Fla-Blender-to-SL Exporter"
 tagline = "Export Blender scenes to SCP:SL (Fla-SL-CustomObjects / FlaProjectMER) schematics"
 maintainer = "Flaouve"
