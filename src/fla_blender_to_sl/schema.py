@@ -201,25 +201,31 @@ def make_light_block(
     unity_intensity: float = 1.0,
     unity_range: float = 10.0,
     shadow_type: ShadowType = ShadowType.NONE,
+    shape: int = 0,
     spot_angle: float | None = None,
     inner_spot_angle: float | None = None,
     shadow_strength: float = 1.0,
     static: bool = False,
 ) -> SchematicBlockData:
     """Create a Light block (BlockType.LIGHT), scaling intensity and range by 100.0."""
+    resolved_spot = float(spot_angle) if spot_angle is not None else 30.0
+    resolved_inner = (
+        float(inner_spot_angle)
+        if inner_spot_angle is not None
+        else min(resolved_spot, 21.8 if spot_angle is None else resolved_spot * 0.72)
+    )
     props: dict[str, Any] = {
         "LightType": int(light_type),
         "Color": color,
         "Intensity": _clean_float(unity_intensity * 100.0),
         "Range": _clean_float(unity_range * 100.0),
-        "ShadowType": int(shadow_type),
+        "Shape": int(shape),
+        "SpotAngle": _clean_float(resolved_spot),
+        "InnerSpotAngle": _clean_float(resolved_inner),
         "ShadowStrength": _clean_float(shadow_strength),
+        "ShadowType": int(shadow_type),
         "Static": bool(static),
     }
-    if spot_angle is not None:
-        props["SpotAngle"] = _clean_float(spot_angle)
-    if inner_spot_angle is not None:
-        props["InnerSpotAngle"] = _clean_float(inner_spot_angle)
 
     return SchematicBlockData(
         name=name,

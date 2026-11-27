@@ -93,6 +93,13 @@ def validate_schematic(data: dict[str, Any], max_primitives: int = 2000) -> Vali
                 errors.append(
                     f"Block[{idx}] ({block.get('Name', '?')}) has invalid Color syntax: {color!r}."
                 )
+        if block_type == int(BlockType.LIGHT):
+            required_light_keys = ("LightType", "Color", "Intensity", "Range", "Shape", "SpotAngle", "InnerSpotAngle", "ShadowStrength", "ShadowType")
+            missing = [k for k in required_light_keys if not isinstance(props, dict) or k not in props]
+            if missing:
+                errors.append(
+                    f"Light Block[{idx}] ({block.get('Name', '?')}) missing required Properties: {', '.join(missing)}."
+                )
 
     valid_parents = seen_ids | ({root_id} if isinstance(root_id, int) and not isinstance(root_id, bool) else set())
     for idx, block in enumerate(blocks):
